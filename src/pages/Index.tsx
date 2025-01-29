@@ -3,12 +3,13 @@ import { CreateNoteButton } from "@/components/CreateNoteButton";
 import { EmptyState } from "@/components/EmptyState";
 import { NoteCard } from "@/components/NoteCard";
 import { NoteEditor } from "@/components/NoteEditor";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface Note {
   id: string;
   title: string;
   content: string;
+  audioUrl?: string;
   createdAt: Date;
 }
 
