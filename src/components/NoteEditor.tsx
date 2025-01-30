@@ -7,7 +7,9 @@ import { Mic, Square, Loader2, Plus, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ProcessingButton from "./ProcessingButton";
-import { ProcessingVariant } from "@/types/note";
+import { ProcessingVariant, Collaborator } from "@/types/note";
+import { CollaboratorPresence } from "./CollaboratorPresence";
+import { ShareButton } from "./ShareButton";
 
 interface NoteEntry {
   id?: string;
@@ -23,16 +25,29 @@ interface Note {
   entries: NoteEntry[];
   created_at: string;
   processingType: ProcessingVariant;
+  collaborators: Collaborator[]; // Changed from string to Collaborator[]
 }
 
 interface NoteEditorProps {
   note?: Note;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (note: { id?: string; title: string; entries: NoteEntry[] }) => void;
+  onSave: (note: { 
+    id?: string; 
+    title: string; 
+    entries: NoteEntry[];
+    collaborators?: Collaborator[];
+  }) => void;
+  currentUserId: string; // Add current user ID for collaboration
 }
 
-export function NoteEditor({ note, open, onOpenChange, onSave }: NoteEditorProps) {
+export function NoteEditor({ 
+  note, 
+  open, 
+  onOpenChange, 
+  onSave,
+  currentUserId 
+}: NoteEditorProps) {
   const [title, setTitle] = useState("");
   const [entries, setEntries] = useState<NoteEntry[]>([{ content: "", audio_url: undefined }]);
 
@@ -132,6 +147,7 @@ export function NoteEditor({ note, open, onOpenChange, onSave }: NoteEditorProps
       id: note?.id,
       title,
       entries: validEntries,
+      collaborators: note?.collaborators,
     });
 
     setTitle("");
@@ -346,13 +362,27 @@ export function NoteEditor({ note, open, onOpenChange, onSave }: NoteEditorProps
           </div>
         </div>
         <div className="flex justify-between items-center">
+          {note && (
+            <div className="flex items-center space-x-2">
+              <CollaboratorPresence 
+                noteId={note.id} 
+                currentUserId={currentUserId} 
+              />
+              <ShareButton 
+                noteId={note.id} 
+                currentUserId={currentUserId} 
+              />
+            </div>
+          )}
           <ProcessingButton 
             note={{
               id: note?.id,
               title,
               entries,
               created_at: note?.created_at,
-              processingType: ProcessingVariant.SUMMARY // Default processing variant
+              processingType: ProcessingVariant.SUMMARY, // Default processing variant
+            collaborators: note?.collaborators || [],
+              content_versions: [] // Add empty content versions
             }} 
           />
           <Button 

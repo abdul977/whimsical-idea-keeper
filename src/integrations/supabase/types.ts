@@ -53,18 +53,21 @@ export type Database = {
           id: string
           title: string
           updated_at: string | null
+          collaborators?: string | null  // JSON string of collaborators
         }
         Insert: {
           created_at?: string | null
           id?: string
           title: string
           updated_at?: string | null
+          collaborators?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           title?: string
           updated_at?: string | null
+          collaborators?: string | null
         }
         Relationships: []
       }
